@@ -5,6 +5,7 @@ import CreateAppointmentService from '@modules/appointments/services/CreateAppoi
 
 export default class AppointmentsController {
   public async create(request: Request, response: Response): Promise<Response> {
+    const user_id = request.user.id;
     const { provider_id, date } = request.body;
 
     // Converte a data de TimeStamp para o objeto date
@@ -15,6 +16,7 @@ export default class AppointmentsController {
 
     const appointment = await createAppointment.execute({
       date: parsedDate,
+      user_id,
       provider_id,
     });
 

@@ -1,5 +1,5 @@
 import { injectable, inject } from 'tsyringe';
-import { getDaysInMonth, getDate, getHours } from 'date-fns';
+import { getHours, isAfter } from 'date-fns';
 import IAppointmentsRepository from '../repositories/IAppointmentsRepository';
 
 interface IRequest {
@@ -43,14 +43,22 @@ class ListProviderDayAvailabilityService {
       (_, index) => index + hourStart,
     );
 
+    // Pega a data atual
+    const currentDate = new Date(Date.now());
+
     const availability = eachHourArray.map(hour => {
       const hasAppointmentInHour = appointments.find(
         appointment => getHours(appointment.date) === hour,
       );
 
+      // Pega a data do agendamento, para poder comparar
+      const compareDate = new Date(year, month - 1, day, hour);
+
+      // Verifica a disponibilidade usando o isAfter, pois a data do Agendamento
+      // deve ser após a data atual, para estar disponível
       return {
         hour,
-        available: !hasAppointmentInHour,
+        available: !hasAppointmentInHour && isAfter(compareDate, currentDate),
       };
     });
 
